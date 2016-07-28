@@ -4,12 +4,37 @@ var LinkedList = function() {
   list.tail = null;
 
   list.addToTail = function(value) {
+    if (list.head === null) {
+      list.head = list.tail = new Node(value);
+    } else {
+      var temp = new Node(value);
+      list.tail.next = temp;
+      list.tail = temp;
+    }
   };
 
   list.removeHead = function() {
+    var temp = list.head.value;
+    if (list.head.next === null) {
+      list.head = null;
+      list.tail = null;
+    } else {
+      list.head = list.head.next;
+    }
+    return temp;
   };
 
-  list.contains = function(target) {
+  list.contains = function(target, node) {
+    if (node === undefined) {
+      node = list.head;
+    }
+    if (node.value === target) {
+      return true;
+    }
+    if (node.next === null) {
+      return false;
+    }
+    return list.contains(target, node.next);
   };
 
   return list;
@@ -24,6 +49,21 @@ var Node = function(value) {
   return node;
 };
 
+// list.head = list.tail
+
+// {}
+
 /*
  * Complexity: What is the time complexity of the above functions?
  */
+
+// [apple, 1]
+// []
+
+// list = {head: {value: 5, next: list.fruit}, fruit: {value: 'apple', next: null} }
+
+
+
+
+
+
