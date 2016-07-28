@@ -49,21 +49,7 @@ var Node = function(value) {
   return node;
 };
 
-// list.head = list.tail
-
-// {}
-
 /*
  * Complexity: What is the time complexity of the above functions?
  */
-
-// [apple, 1]
-// []
-
-// list = {head: {value: 5, next: list.fruit}, fruit: {value: 'apple', next: null} }
-
-
-
-
-
 
