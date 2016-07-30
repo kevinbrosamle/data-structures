@@ -11,9 +11,16 @@ setPrototype.add = function(item) {
 };
 
 setPrototype.contains = function(item) {
+  if ((typeof item) === 'object') {
+    item = JSON.stringify(item);
+  }
   var inSet = false;
   for (var key in this._storage) {
-    if (item === key) {
+    var temp = this._storage[key];
+    if ((typeof temp === 'object')) {
+      temp = JSON.stringify(temp);
+    }
+    if (item === temp) {
       inSet = true;
     }
   }
@@ -22,7 +29,7 @@ setPrototype.contains = function(item) {
 
 setPrototype.remove = function(item) {
   for (var key in this._storage) {
-    if (item === key) {
+    if (item === this._storage[key]) {
       delete this._storage[key];
     }
   }
