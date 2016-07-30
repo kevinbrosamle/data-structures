@@ -9,31 +9,10 @@ var Graph = function(node) {
 // Add a node to the graph, passing in the node's value.
 Graph.prototype.addNode = function(node) {
   this.edges.push(new Graph(node));
-  // console.log(this);
 };
 
 // Return a boolean value indicating if the value passed to contains is represented in the graph.
 Graph.prototype.contains = function(node) {
-  // if (searched === undefined) {
-  //   var searched = [];
-  // }
-
-  // var found = false;
-  // for (var i = 0; i < searched.length; i++) {
-  //   if (searched[i] === node) {
-  //     found = true;
-  //   }
-  // }
-  // if (!found) {
-  //   if (this.node === node) {
-  //     return true;
-  //   }
-  //   searched.push(node);
-  //   for (var i = 0; i < this.edges.length; i++) {
-  //     this.edges[i].contains(node, searched);
-  //   }
-  // }
-  // return false;
   for (var i = 0; i < this.edges.length; i++) {
     if (this.edges[i].node === node) {
       return true;
@@ -119,25 +98,11 @@ Graph.prototype.removeEdge = function(fromNode, toNode) {
       }
     }
   }
-  // for (var i = 0; i < this.edges.length; i++) {
-  //   if (this.edges[i].node === fromNode) {
-  //     for (var j = 0; j < this.edges[i].edges.length; j++) {
-  //       console.log(this.edges[i].edges[j]);
-  //       if (this.edges[i].edges[j] === toNode) {
-  //         console.log('test');
-  //         this.edges[i].edges.splice(j, 1);
-          
-  //         j--;
-  //       }
-  //     }
-  //   }
-  // }
 };
 
 // Pass in a callback which will be executed on each node of the graph.
 Graph.prototype.forEachNode = function(cb) {
   for (var i = 0; i < this.edges.length; i++) {
-    console.log(this.edges[i]);
     cb(this.edges[i].node);
   }
 };
