@@ -3,19 +3,50 @@
 var HashTable = function() {
   this._limit = 8;
   this._storage = LimitedArray(this._limit);
+  this._count = 0;
   //
 };
 
+HashTable.prototype.redistribute = function(halveOrDouble) {
+  // copy this._storage to oldStorage
+  var oldStorage = [];
+  for (var i = 0; i < this._limit; i++) {
+    if (this._storage.get(i) !== undefined) {
+      var bucket = this._storage.get(i);
+      for (var j = 0; j < bucket.length; j++) {
+        oldStorage.push(bucket[j]);
+      }
+    } 
+  }
+  // create a new _storage with the new limit
+  if (halveOrDouble === 'double') {
+    this._limit *= 2;
+    this._storage = LimitedArray(this._limit);
+    this._count = 0;
+  } else if (halveOrDouble === 'halve') {
+    this._limit *= .5;
+    this._storage = LimitedArray(this._limit);
+    this._count = 0;
+  }
+
+  // repopulate this._storage with the new indexes.
+  for (i = 0; i < oldStorage.length; i++) {
+    this.insert(oldStorage[i][0], oldStorage[i][1]);
+  }
+};
+
 HashTable.prototype.insert = function(k, v) {
-  //[[k,v][k2,v2]] -> bucket
+  this._count++;
+  if (this._count > (.75 * this._limit)) {
+    this.redistribute('double');
+  }
+  
   var bucket;
   var index = getIndexBelowMaxForKey(k, this._limit);
   if (this._storage.get(index) === undefined) {
     this._storage.set(index, [[k, v]]);
   } else {
     bucket = this._storage.get(index);
-    //[['bat', 'echo']] -> tuple inside bucket
-    // k = 'bat'
     var keyInBucket = false;
     for (var i = 0; i < bucket.length; i++) {
       if (bucket[i][0] === k) {
@@ -28,23 +59,26 @@ HashTable.prototype.insert = function(k, v) {
     }
     this._storage.set(index, bucket);
   }
+  
 };
 
 HashTable.prototype.retrieve = function(k) {
-  // var index = getIndexBelowMaxForKey(k, this._limit);
-  // return this._storage.get(index);
   var index = getIndexBelowMaxForKey(k, this._limit);
-  // [[k1, v1], [k2, v2]];
   var bucket = this._storage.get(index);
-  for (var i = 0; i < bucket.length; i++) {
-    if (bucket[i][0] === k) {
-      return bucket[i][1];
+  if (bucket !== undefined) {
+    for (var i = 0; i < bucket.length; i++) {
+      if (bucket[i][0] === k) {
+        return bucket[i][1];
+      }
     }
   }
-
 };
 
 HashTable.prototype.remove = function(k) {
+  this._count--;
+  if (this._count < (.25 * this._limit)) {
+    this.redistribute('halve');
+  }
   var index = getIndexBelowMaxForKey(k, this._limit);
   var bucket = this._storage.get(index);
   for (var i = 0; i < bucket.length; i++) {
@@ -52,7 +86,11 @@ HashTable.prototype.remove = function(k) {
       bucket.splice(i, 1);
     }
   }
-  this._storage.set(index, bucket);
+  if (bucket.length === 0) {
+    this._storage.set(index, undefined);
+  } else {
+    this._storage.set(index, bucket);
+  }
 };
 
 
@@ -60,9 +98,3 @@ HashTable.prototype.remove = function(k) {
 /*
  * Complexity: What is the time complexity of the above functions?
  */
-
-// {John Smith: 532-2342, Lisa Smith: 234-2234 .... Sandra Dee: 743-3453}
-
-// {John Smith: 0, Lisa: 1 ... Sandra: 4}
-// [532-2342, 234-2234 .... 743-3453]
-//     0         1              4
